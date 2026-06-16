@@ -3,35 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Carb & Natrium Rechner fürs Radfahren</title>
+  <title>Carb Rechner V2 – Fueling Planner</title>
   <style>
     :root {
       --bg:#f6f7f9; --card:#fff; --text:#1f2937; --muted:#6b7280;
       --accent:#2563eb; --accent-light:#dbeafe; --border:#e5e7eb;
       --warn:#b45309; --warn-bg:#fff7ed; --ok:#047857; --ok-bg:#ecfdf5;
-      --danger:#b91c1c; --danger-bg:#fef2f2;
+      --danger:#b91c1c; --danger-bg:#fef2f2; --soft:#f5f3ff; --soft-text:#5b21b6;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.45}
-    .container{max-width:1050px;margin:0 auto;padding:24px}
+    .container{max-width:1120px;margin:0 auto;padding:24px}
     h1,h2,h3{margin-top:0;line-height:1.2}
     h1{font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:8px}
     .subtitle{color:var(--muted);margin-bottom:24px}
     .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(15,23,42,.04)}
-    .span-4{grid-column:span 4}.span-12{grid-column:span 12}
-    @media(max-width:850px){.span-4{grid-column:span 12}.container{padding:14px}}
+    .span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-12{grid-column:span 12}
+    @media(max-width:900px){.span-4,.span-6{grid-column:span 12}.container{padding:14px}}
     label{display:block;font-weight:650;margin-bottom:6px}
     select,input[type=number]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-size:1rem}
     .choice-row{display:grid;gap:8px;margin-top:8px}
     .choice{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#fff}
     .choice strong{font-size:.96rem}.choice span,.small{color:var(--muted);font-size:.9rem}.small{margin-top:6px}
     .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:var(--accent-light);color:#1d4ed8;font-weight:650;font-size:.86rem;margin:4px 4px 0 0}
-    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    @media(max-width:850px){.summary{grid-template-columns:repeat(2,1fr)}}
+    .pill.soft{background:var(--soft);color:var(--soft-text)}
+    .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+    @media(max-width:900px){.summary{grid-template-columns:repeat(2,1fr)}}
     .metric{background:#f9fafb;border:1px solid var(--border);border-radius:14px;padding:12px}
-    .metric .value{font-size:1.35rem;font-weight:800}.metric .label{color:var(--muted);font-size:.88rem}
-    table{width:100%;border-collapse:collapse;margin-top:12px;overflow:hidden;border-radius:12px;font-size:.95rem}
+    .metric .value{font-size:1.25rem;font-weight:800}.metric .label{color:var(--muted);font-size:.86rem}
+    table{width:100%;border-collapse:collapse;margin-top:12px;border-radius:12px;font-size:.95rem}
     th,td{border-bottom:1px solid var(--border);padding:10px;text-align:left;vertical-align:top}
     th{background:#f9fafb;font-size:.86rem;color:#374151}tr:last-child td{border-bottom:none}
     .note{border-radius:12px;padding:12px;margin-top:10px;border:1px solid var(--border)}
@@ -43,17 +44,19 @@
     .primary{background:var(--accent);color:#fff}.secondary{background:#eef2ff;color:#3730a3}
     details{margin-top:12px;color:var(--muted)}details summary{cursor:pointer;color:var(--text);font-weight:700}
     .footer{color:var(--muted);font-size:.84rem;margin-top:22px}
+    .hidden{display:none}
     @media print{body{background:#fff}.button-row,.footer{display:none}.card{box-shadow:none;break-inside:avoid}}
   </style>
 </head>
 <body>
 <main class="container">
-  <h1>Carb & Natrium Rechner fürs Radfahren</h1>
-  <p class="subtitle">Berechnet Maltodextrin, Fructose und Salz für deine ausgewählten Flaschen – inklusive Gel-Abzug, Schweißraten-Schalter und 100-g-Grenze je 150-ml-Softflask.</p>
+  <h1>Carb Rechner V2 – Fueling Planner</h1>
+  <p class="subtitle">Plant Kohlenhydrate, Natrium, Trinkmenge, Flaschenverteilung und Nachfüllbedarf für deine Radfahrten.</p>
 
   <section class="grid">
     <div class="card span-4">
       <h2>1. Fahrt</h2>
+
       <label for="intensity">Intensität</label>
       <select id="intensity">
         <option value="easy">Einfach – 40 g KH/h – 2:1</option>
@@ -68,6 +71,14 @@
       <p class="small">Beispiele: 1,5 / 2 / 3,25 / 4</p>
 
       <div style="height:14px"></div>
+      <label for="temperature">Temperatur</label>
+      <select id="temperature">
+        <option value="cold">Kühl &lt;15 °C</option>
+        <option value="normal" selected>Normal 15–25 °C</option>
+        <option value="hot">Heiß &gt;25 °C</option>
+      </select>
+
+      <div style="height:14px"></div>
       <label for="sweatRate">Schweißrate / Natriumziel</label>
       <select id="sweatRate">
         <option value="low">Gering – 400 mg Natrium/h</option>
@@ -75,17 +86,48 @@
         <option value="high">Hoch – 750 mg Natrium/h</option>
         <option value="veryHigh">Sehr hoch – 1000 mg Natrium/h</option>
       </select>
-      <p class="small">Für Hitze, lange Anstiege, hohe Schweißrate oder Salzränder eher „hoch“ oder „sehr hoch“ wählen.</p>
-
-      <div style="height:14px"></div>
-      <label for="gels">Anzahl PowerBar Original Gels</label>
-      <input id="gels" type="number" value="0" min="0" max="30" step="1" />
-      <p class="small">Je Gel: 30 g KH im 2:1 Verhältnis ≈ 20 g Glucose/Malto-Anteil + 10 g Fructose.</p>
     </div>
 
     <div class="card span-4">
-      <h2>2. Flaschen auswählen</h2>
-      <p class="small">Softflasks werden zuerst mit maximal 100 g KH je 150 ml befüllt. Danach folgt die nächste Softflask, anschließend die kleinste normale Flasche. Ohne Softflask werden die kleinsten normalen Flaschen priorisiert.</p>
+      <h2>2. Trinkmenge</h2>
+
+      <label for="fluidMode">Trinkmenge</label>
+      <select id="fluidMode">
+        <option value="auto" selected>Automatisch nach Intensität + Temperatur</option>
+        <option value="manual">Manuell überschreiben</option>
+      </select>
+
+      <div id="manualFluidWrapper" class="hidden" style="margin-top:14px">
+        <label for="manualFluid">Manuelle Trinkmenge L/h</label>
+        <select id="manualFluid">
+          <option value="0.4">0,4 L/h</option>
+          <option value="0.5">0,5 L/h</option>
+          <option value="0.65">0,65 L/h</option>
+          <option value="0.75" selected>0,75 L/h</option>
+          <option value="0.85">0,85 L/h</option>
+          <option value="1.0">1,0 L/h</option>
+          <option value="1.1">1,1 L/h</option>
+          <option value="1.25">1,25 L/h</option>
+        </select>
+      </div>
+
+      <p class="small">Die automatische Empfehlung basiert auf Temperatur und Intensität. Du kannst sie jederzeit manuell überschreiben.</p>
+
+      <div style="height:14px"></div>
+      <label for="gels">Anzahl PowerBar Original Gels</label>
+      <select id="gels">
+        <option value="0" selected>0 Gels</option>
+        <option value="1">1 Gel</option><option value="2">2 Gels</option><option value="3">3 Gels</option>
+        <option value="4">4 Gels</option><option value="5">5 Gels</option><option value="6">6 Gels</option>
+        <option value="7">7 Gels</option><option value="8">8 Gels</option><option value="9">9 Gels</option>
+        <option value="10">10 Gels</option><option value="11">11 Gels</option><option value="12">12 Gels</option>
+      </select>
+      <p class="small">Je Gel: 30 g KH im 2:1 Verhältnis und ca. 200 mg Natrium.</p>
+    </div>
+
+    <div class="card span-4">
+      <h2>3. Flaschen</h2>
+      <p class="small">Softflasks zuerst mit max. 100 g KH je 150 ml. Danach normale Flaschen von klein nach groß.</p>
       <div class="choice-row">
         <label class="choice"><div><strong>600 ml Flasche 1</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="600 ml Flasche 1" data-volume="600" data-type="bottle"></label>
         <label class="choice"><div><strong>600 ml Flasche 2</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="600 ml Flasche 2" data-volume="600" data-type="bottle"></label>
@@ -96,27 +138,25 @@
       </div>
     </div>
 
-    <div class="card span-4">
-      <h2>3. Regeln</h2>
+    <div class="card span-12">
+      <h2>Plan</h2>
       <div id="rules"></div>
-      <details>
-        <summary>Grenzwerte / Annahmen</summary>
-        <p>Salz wird auf alle ausgewählten Flaschen verteilt. Bis 5 g Salz/L keine Warnung, 5–6,5 g/L Hinweis, über 6,5 g/L wird zusätzliches Natrium über Tabs/Kapseln empfohlen.</p>
-        <p>Carb-Konzentrat: Softflasks max. 100 g je 150 ml. Normale Flaschen können als Konzentrat höher befüllt werden; ab ca. 300 g KH/L kommt ein Hinweis, ab ca. 450 g KH/L eine Warnung.</p>
-      </details>
+      <div id="result"></div>
       <div class="button-row">
         <button class="primary" onclick="calculate()">Berechnen</button>
         <button class="secondary" onclick="window.print()">Drucken</button>
       </div>
-    </div>
 
-    <div class="card span-12">
-      <h2>Ergebnis</h2>
-      <div id="result"></div>
+      <details>
+        <summary>Regeln / Annahmen</summary>
+        <p>Carb-Ziele: einfach 40 g/h, moderat 60 g/h, hart 80 g/h, Wettkampf 100 g/h. Einfach/moderat = 2:1, hart/Wettkampf = 1:0,8.</p>
+        <p>Trinkmengen-Matrix: kühl 0,4/0,5/0,6/0,7 L/h; normal 0,5/0,65/0,75/0,85 L/h; heiß 0,65/0,8/0,95/1,1 L/h für einfach/moderat/hart/Wettkampf.</p>
+        <p>Salz: Natrium × 2,54 = Kochsalz. Bis 5 g Salz/L keine Warnung, 5–6,5 g/L Hinweis, über 6,5 g/L zusätzlicher Natriumhinweis.</p>
+      </details>
     </div>
   </section>
 
-  <p class="footer">Hinweis: Praxisrechner, keine medizinische Beratung. Verträglichkeit im Training testen, besonders bei hohen Carb- und Natriummengen.</p>
+  <p class="footer">Hinweis: Praxisrechner, keine medizinische Beratung. Verträglichkeit im Training testen.</p>
 </main>
 
 <script>
@@ -127,6 +167,18 @@ const CONFIG = {
   race: { label:"Wettkampf", carbsPerHour:100, ratioName:"1:0,8", maltoPart:1, fructosePart:0.8 }
 };
 
+const TEMPERATURE = {
+  cold: { label:"Kühl <15 °C" },
+  normal: { label:"Normal 15–25 °C" },
+  hot: { label:"Heiß >25 °C" }
+};
+
+const FLUID_MATRIX = {
+  cold: { easy:0.4, moderate:0.5, hard:0.6, race:0.7 },
+  normal: { easy:0.5, moderate:0.65, hard:0.75, race:0.85 },
+  hot: { easy:0.65, moderate:0.8, hard:0.95, race:1.1 }
+};
+
 const SWEAT = {
   low: { label:"Gering", sodiumPerHourMg:400 },
   normal: { label:"Normal", sodiumPerHourMg:500 },
@@ -134,15 +186,16 @@ const SWEAT = {
   veryHigh: { label:"Sehr hoch", sodiumPerHourMg:1000 }
 };
 
-const GEL = { carbs:30, maltoEquivalent:20, fructose:10 };
+const GEL = { label:"PowerBar Original", carbs:30, maltoEquivalent:20, fructose:10, sodiumMg:200 };
 const softflaskMaxCarbs = 100;
-const saltFactor = 2.54; // Natrium -> NaCl
+const saltFactor = 2.54;
 const okSaltPerLiter = 5.0;
 const maxBottleSaltPerLiter = 6.5;
 const highCarbConcGL = 300;
 const criticalCarbConcGL = 450;
 
 function round(value, digits=0){ const f=Math.pow(10,digits); return Math.round(value*f)/f; }
+function formatL(value){ return String(round(value,2)).replace(".", ","); }
 
 function selectedBottles(){
   return [...document.querySelectorAll(".bottle:checked")].map((el,idx)=>({
@@ -153,6 +206,12 @@ function selectedBottles(){
 function splitByRatio(total, maltoPart, fructosePart){
   const sum = maltoPart + fructosePart;
   return { malto: total * maltoPart / sum, fructose: total * fructosePart / sum };
+}
+
+function getFluidPerHour(intensityKey, temperatureKey){
+  const mode = document.getElementById("fluidMode").value;
+  if (mode === "manual") return Number(document.getElementById("manualFluid").value);
+  return FLUID_MATRIX[temperatureKey][intensityKey];
 }
 
 function planCarbDistribution(bottles, carbsToCarry, remainingMalto, remainingFructose){
@@ -191,13 +250,18 @@ function planCarbDistribution(bottles, carbsToCarry, remainingMalto, remainingFr
 
 function calculate(){
   const intensityKey = document.getElementById("intensity").value;
+  const temperatureKey = document.getElementById("temperature").value;
   const sweatKey = document.getElementById("sweatRate").value;
   const duration = Number(document.getElementById("duration").value);
-  const gels = Math.max(0, Math.floor(Number(document.getElementById("gels").value || 0)));
+  const gels = Number(document.getElementById("gels").value || 0);
+
   const cfg = CONFIG[intensityKey];
+  const temp = TEMPERATURE[temperatureKey];
   const sweat = SWEAT[sweatKey];
-  const sodiumPerHourMg = sweat.sodiumPerHourMg;
+  const fluidPerHour = getFluidPerHour(intensityKey, temperatureKey);
   const bottles = selectedBottles();
+
+  document.getElementById("manualFluidWrapper").classList.toggle("hidden", document.getElementById("fluidMode").value !== "manual");
 
   if (!duration || duration <= 0) {
     document.getElementById("result").innerHTML = `<div class="note danger">Bitte eine gültige Dauer eingeben.</div>`;
@@ -214,16 +278,22 @@ function calculate(){
   const gelCarbs = gels * GEL.carbs;
   const gelMalto = gels * GEL.maltoEquivalent;
   const gelFructose = gels * GEL.fructose;
+  const gelSodiumMg = gels * GEL.sodiumMg;
 
   const remainingMalto = Math.max(0, targetSplit.malto - gelMalto);
   const remainingFructose = Math.max(0, targetSplit.fructose - gelFructose);
   const remainingCarbs = remainingMalto + remainingFructose;
 
-  const sodiumTotalMg = sodiumPerHourMg * duration;
-  const saltTotalG = sodiumTotalMg / 1000 * saltFactor;
+  const sodiumTargetMg = sweat.sodiumPerHourMg * duration;
+  const sodiumToCarryMg = Math.max(0, sodiumTargetMg - gelSodiumMg);
+  const saltTotalG = sodiumToCarryMg / 1000 * saltFactor;
 
-  const totalVolumeL = bottles.reduce((s,b)=>s+b.volume,0) / 1000;
-  const maxSaltInBottlesG = maxBottleSaltPerLiter * totalVolumeL;
+  const totalBottleVolumeL = bottles.reduce((s,b)=>s+b.volume,0) / 1000;
+  const totalFluidNeedL = fluidPerHour * duration;
+  const refillNeedL = Math.max(0, totalFluidNeedL - totalBottleVolumeL);
+  const refillStops = refillNeedL <= 0 ? 0 : Math.ceil(refillNeedL / 0.75);
+
+  const maxSaltInBottlesG = maxBottleSaltPerLiter * totalBottleVolumeL;
   const saltInBottlesG = Math.min(saltTotalG, maxSaltInBottlesG);
   const additionalSaltG = Math.max(0, saltTotalG - saltInBottlesG);
   const additionalSodiumMg = additionalSaltG / saltFactor * 1000;
@@ -236,14 +306,14 @@ function calculate(){
   let rows = "";
   bottles.forEach(b=>{
     const carbEntry = carbPlanByName.get(b.name);
-    const saltG = saltInBottlesG * (b.volume / (totalVolumeL * 1000));
-    let malto=0, fructose=0, carbs=0, role="Wasser / Salz";
+    const saltG = saltInBottlesG * (b.volume / (totalBottleVolumeL * 1000));
+    let malto=0, fructose=0, carbs=0, role="Wasser + Salz";
 
     if (carbEntry) {
       malto = carbEntry.malto;
       fructose = carbEntry.fructose;
       carbs = carbEntry.carbs;
-      role = "Carb-Konzentrat";
+      role = b.type === "soft" ? "Carb-Gel-Konzentrat" : "Carb-Konzentrat";
     }
 
     const carbConc = b.volume > 0 ? carbs / (b.volume/1000) : 0;
@@ -263,11 +333,22 @@ function calculate(){
   });
 
   const carbConcTotal = carbVolumeTotalMl > 0 ? carbsActuallyAssigned / (carbVolumeTotalMl/1000) : 0;
-  const saltConcTotal = saltInBottlesG / totalVolumeL;
+  const saltConcTotal = saltInBottlesG / totalBottleVolumeL;
 
   let notes = "";
+
+  if (refillNeedL > 0) {
+    notes += `<div class="note warn">Nachfüllbedarf: Dir fehlen ca. ${formatL(refillNeedL)} L Flüssigkeit. Plane ungefähr ${refillStops} Wasserstopp(s) ein, wenn du pro Stopp etwa 750 ml nachfüllst.</div>`;
+  } else {
+    notes += `<div class="note ok">Die ausgewählten Flaschen decken die empfohlene Trinkmenge für diese Fahrt vollständig ab.</div>`;
+  }
+
   if (gelCarbs > targetCarbs) {
-    notes += `<div class="note warn">Die gewählten Gels liefern bereits mehr Kohlenhydrate als dein Ziel. Die App setzt Malto/Fructose deshalb auf 0 g.</div>`;
+    notes += `<div class="note warn">Die gewählten Gels liefern bereits mehr Kohlenhydrate als dein Ziel. Malto/Fructose in Flaschen wird deshalb auf 0 g gesetzt.</div>`;
+  }
+
+  if (gelSodiumMg >= sodiumTargetMg && gels > 0) {
+    notes += `<div class="note ok">Die Gels decken dein Natriumziel bereits vollständig oder übersteigen es. Es wird kein zusätzliches Salz in den Flaschen eingeplant.</div>`;
   }
 
   const fullSoftflasks = carbPlan.filter(b => b.type === "soft" && b.carbs >= softflaskMaxCarbs * (b.volume / 150) - 0.1).length;
@@ -286,7 +367,7 @@ function calculate(){
   if (additionalSodiumMg > 0) {
     notes += `<div class="note danger">Die Salzkonzentration in den Flaschen ist auf ${maxBottleSaltPerLiter} g/L begrenzt. Zusätzlich mitnehmen: ca. ${round(additionalSodiumMg)} mg Natrium, entsprechend ca. ${round(additionalSaltG,1)} g Salz über Tabs/Kapseln.</div>`;
   } else if (saltConcTotal > okSaltPerLiter) {
-    notes += `<div class="note warn">Deutlich salzig: ca. ${round(saltConcTotal,1)} g Salz/L. Für lange Fahrten, Hitze oder hohe Schweißverluste praxisnah, aber unbedingt testen.</div>`;
+    notes += `<div class="note warn">Deutlich salzig: ca. ${round(saltConcTotal,1)} g Salz/L. Für lange Fahrten, Hitze oder hohe Schweißverluste praxisnah, aber testen.</div>`;
   } else {
     notes += `<div class="note ok">Salz/Natrium ist auf alle ausgewählten Flaschen verteilt. Konzentration: ca. ${round(saltConcTotal,1)} g Salz/L.</div>`;
   }
@@ -295,15 +376,19 @@ function calculate(){
     <span class="pill">${cfg.label}</span>
     <span class="pill">${cfg.carbsPerHour} g KH/h</span>
     <span class="pill">${cfg.ratioName} Malto:Fructose</span>
-    <span class="pill">${sweat.label}: ${sodiumPerHourMg} mg Natrium/h</span>
+    <span class="pill">${temp.label}</span>
+    <span class="pill soft">${formatL(fluidPerHour)} L/h Trinkmenge</span>
+    <span class="pill">${sweat.label}: ${sweat.sodiumPerHourMg} mg Natrium/h</span>
+    <span class="pill">${gels} Gel(s): ${round(gelSodiumMg)} mg Natrium</span>
   `;
 
   document.getElementById("result").innerHTML = `
     <div class="summary">
       <div class="metric"><div class="value">${round(targetCarbs)} g</div><div class="label">Ziel-KH gesamt</div></div>
-      <div class="metric"><div class="value">${round(gelCarbs)} g</div><div class="label">KH durch Gels</div></div>
       <div class="metric"><div class="value">${round(remainingCarbs)} g</div><div class="label">KH in Flaschen</div></div>
-      <div class="metric"><div class="value">${round(saltTotalG,1)} g</div><div class="label">Salz gesamt geplant</div></div>
+      <div class="metric"><div class="value">${formatL(totalFluidNeedL)} L</div><div class="label">Flüssigkeitsbedarf</div></div>
+      <div class="metric"><div class="value">${formatL(totalBottleVolumeL)} L</div><div class="label">Startkapazität</div></div>
+      <div class="metric"><div class="value">${formatL(refillNeedL)} L</div><div class="label">Nachfüllbedarf</div></div>
     </div>
 
     <table>
@@ -317,8 +402,10 @@ function calculate(){
 
     <div class="note ok">
       Zielsplit vor Gel-Abzug: ${round(targetSplit.malto)} g Malto/Glucose-Anteil + ${round(targetSplit.fructose)} g Fructose.
-      Nach ${gels} Gel(s) bleiben: ${round(remainingMalto)} g Malto + ${round(remainingFructose)} g Fructose.
-      Natriumziel: ${round(sodiumTotalMg)} mg gesamt.
+      Durch ${gels} Gel(s): ${round(gelCarbs)} g KH und ${round(gelSodiumMg)} mg Natrium.
+      Nach Gel-Abzug bleiben: ${round(remainingMalto)} g Malto + ${round(remainingFructose)} g Fructose.
+      Natriumziel gesamt: ${round(sodiumTargetMg)} mg; davon noch über Flaschen/Tabs: ${round(sodiumToCarryMg)} mg.
+      Salz in Flaschen geplant: ${round(saltInBottlesG,1)} g.
     </div>
     ${notes}
   `;
