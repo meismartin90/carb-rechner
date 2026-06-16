@@ -49,7 +49,7 @@
 <body>
 <main class="container">
   <h1>Carb & Natrium Rechner fürs Radfahren</h1>
-  <p class="subtitle">Berechnet Maltodextrin, Fructose und Salz für deine ausgewählten Flaschen – inklusive Gel-Abzug und 100-g-Grenze je 150-ml-Softflask.</p>
+  <p class="subtitle">Berechnet Maltodextrin, Fructose und Salz für deine ausgewählten Flaschen – inklusive Gel-Abzug, Schweißraten-Schalter und 100-g-Grenze je 150-ml-Softflask.</p>
 
   <section class="grid">
     <div class="card span-4">
@@ -61,10 +61,22 @@
         <option value="hard">Hart – 80 g KH/h – 1:0,8</option>
         <option value="race">Wettkampf – 100 g KH/h – 1:0,8</option>
       </select>
+
       <div style="height:14px"></div>
       <label for="duration">Dauer in Stunden</label>
       <input id="duration" type="number" value="3" min="0.5" max="24" step="0.25" />
       <p class="small">Beispiele: 1,5 / 2 / 3,25 / 4</p>
+
+      <div style="height:14px"></div>
+      <label for="sweatRate">Schweißrate / Natriumziel</label>
+      <select id="sweatRate">
+        <option value="low">Gering – 400 mg Natrium/h</option>
+        <option value="normal" selected>Normal – 500 mg Natrium/h</option>
+        <option value="high">Hoch – 750 mg Natrium/h</option>
+        <option value="veryHigh">Sehr hoch – 1000 mg Natrium/h</option>
+      </select>
+      <p class="small">Für Hitze, lange Anstiege, hohe Schweißrate oder Salzränder eher „hoch“ oder „sehr hoch“ wählen.</p>
+
       <div style="height:14px"></div>
       <label for="gels">Anzahl PowerBar Original Gels</label>
       <input id="gels" type="number" value="0" min="0" max="30" step="1" />
@@ -89,7 +101,7 @@
       <div id="rules"></div>
       <details>
         <summary>Grenzwerte / Annahmen</summary>
-        <p>Salz wird auf alle ausgewählten Flaschen verteilt. Ab ca. 2,4 g Salz/L erscheint ein Geschmackshinweis. Alles darüber wird als zusätzlich benötigtes Natrium über Tabs/Kapseln ausgewiesen.</p>
+        <p>Salz wird auf alle ausgewählten Flaschen verteilt. Bis 5 g Salz/L keine Warnung, 5–6,5 g/L Hinweis, über 6,5 g/L wird zusätzliches Natrium über Tabs/Kapseln empfohlen.</p>
         <p>Carb-Konzentrat: Softflasks max. 100 g je 150 ml. Normale Flaschen können als Konzentrat höher befüllt werden; ab ca. 300 g KH/L kommt ein Hinweis, ab ca. 450 g KH/L eine Warnung.</p>
       </details>
       <div class="button-row">
@@ -114,20 +126,30 @@ const CONFIG = {
   hard: { label:"Hart", carbsPerHour:80, ratioName:"1:0,8", maltoPart:1, fructosePart:0.8 },
   race: { label:"Wettkampf", carbsPerHour:100, ratioName:"1:0,8", maltoPart:1, fructosePart:0.8 }
 };
+
+const SWEAT = {
+  low: { label:"Gering", sodiumPerHourMg:400 },
+  normal: { label:"Normal", sodiumPerHourMg:500 },
+  high: { label:"Hoch", sodiumPerHourMg:750 },
+  veryHigh: { label:"Sehr hoch", sodiumPerHourMg:1000 }
+};
+
 const GEL = { carbs:30, maltoEquivalent:20, fructose:10 };
 const softflaskMaxCarbs = 100;
-const sodiumPerHourMg = 500;
-const saltFactor = 2.54;
-const palatableSaltPerLiter = 2.4;
+const saltFactor = 2.54; // Natrium -> NaCl
+const okSaltPerLiter = 5.0;
+const maxBottleSaltPerLiter = 6.5;
 const highCarbConcGL = 300;
 const criticalCarbConcGL = 450;
 
 function round(value, digits=0){ const f=Math.pow(10,digits); return Math.round(value*f)/f; }
+
 function selectedBottles(){
   return [...document.querySelectorAll(".bottle:checked")].map((el,idx)=>({
     id:idx, name:el.dataset.name, volume:Number(el.dataset.volume), type:el.dataset.type
   }));
 }
+
 function splitByRatio(total, maltoPart, fructosePart){
   const sum = maltoPart + fructosePart;
   return { malto: total * maltoPart / sum, fructose: total * fructosePart / sum };
@@ -169,9 +191,12 @@ function planCarbDistribution(bottles, carbsToCarry, remainingMalto, remainingFr
 
 function calculate(){
   const intensityKey = document.getElementById("intensity").value;
+  const sweatKey = document.getElementById("sweatRate").value;
   const duration = Number(document.getElementById("duration").value);
   const gels = Math.max(0, Math.floor(Number(document.getElementById("gels").value || 0)));
   const cfg = CONFIG[intensityKey];
+  const sweat = SWEAT[sweatKey];
+  const sodiumPerHourMg = sweat.sodiumPerHourMg;
   const bottles = selectedBottles();
 
   if (!duration || duration <= 0) {
@@ -198,8 +223,8 @@ function calculate(){
   const saltTotalG = sodiumTotalMg / 1000 * saltFactor;
 
   const totalVolumeL = bottles.reduce((s,b)=>s+b.volume,0) / 1000;
-  const maxPalatableSaltG = palatableSaltPerLiter * totalVolumeL;
-  const saltInBottlesG = Math.min(saltTotalG, maxPalatableSaltG);
+  const maxSaltInBottlesG = maxBottleSaltPerLiter * totalVolumeL;
+  const saltInBottlesG = Math.min(saltTotalG, maxSaltInBottlesG);
   const additionalSaltG = Math.max(0, saltTotalG - saltInBottlesG);
   const additionalSodiumMg = additionalSaltG / saltFactor * 1000;
 
@@ -259,18 +284,18 @@ function calculate(){
   }
 
   if (additionalSodiumMg > 0) {
-    notes += `<div class="note warn">Salzmenge in den Flaschen auf ca. ${round(palatableSaltPerLiter,1)} g/L begrenzt. Zusätzlich mitnehmen: ca. ${round(additionalSodiumMg)} mg Natrium, entsprechend ca. ${round(additionalSaltG,1)} g Salz über Tabs/Kapseln.</div>`;
-  } else if (saltConcTotal > palatableSaltPerLiter * 0.75) {
-    notes += `<div class="note warn">Die Salzkonzentration liegt bei ca. ${round(saltConcTotal,1)} g/L. Das kann deutlich salzig schmecken.</div>`;
+    notes += `<div class="note danger">Die Salzkonzentration in den Flaschen ist auf ${maxBottleSaltPerLiter} g/L begrenzt. Zusätzlich mitnehmen: ca. ${round(additionalSodiumMg)} mg Natrium, entsprechend ca. ${round(additionalSaltG,1)} g Salz über Tabs/Kapseln.</div>`;
+  } else if (saltConcTotal > okSaltPerLiter) {
+    notes += `<div class="note warn">Deutlich salzig: ca. ${round(saltConcTotal,1)} g Salz/L. Für lange Fahrten, Hitze oder hohe Schweißverluste praxisnah, aber unbedingt testen.</div>`;
   } else {
-    notes += `<div class="note ok">Salz/Natrium ist auf alle ausgewählten Flaschen verteilt.</div>`;
+    notes += `<div class="note ok">Salz/Natrium ist auf alle ausgewählten Flaschen verteilt. Konzentration: ca. ${round(saltConcTotal,1)} g Salz/L.</div>`;
   }
 
   document.getElementById("rules").innerHTML = `
     <span class="pill">${cfg.label}</span>
     <span class="pill">${cfg.carbsPerHour} g KH/h</span>
     <span class="pill">${cfg.ratioName} Malto:Fructose</span>
-    <span class="pill">${sodiumPerHourMg} mg Natrium/h</span>
+    <span class="pill">${sweat.label}: ${sodiumPerHourMg} mg Natrium/h</span>
   `;
 
   document.getElementById("result").innerHTML = `
@@ -293,6 +318,7 @@ function calculate(){
     <div class="note ok">
       Zielsplit vor Gel-Abzug: ${round(targetSplit.malto)} g Malto/Glucose-Anteil + ${round(targetSplit.fructose)} g Fructose.
       Nach ${gels} Gel(s) bleiben: ${round(remainingMalto)} g Malto + ${round(remainingFructose)} g Fructose.
+      Natriumziel: ${round(sodiumTotalMg)} mg gesamt.
     </div>
     ${notes}
   `;
