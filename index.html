@@ -1,420 +1,157 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Carb Rechner V2 – Fueling Planner</title>
-  <style>
-    :root {
-      --bg:#f6f7f9; --card:#fff; --text:#1f2937; --muted:#6b7280;
-      --accent:#2563eb; --accent-light:#dbeafe; --border:#e5e7eb;
-      --warn:#b45309; --warn-bg:#fff7ed; --ok:#047857; --ok-bg:#ecfdf5;
-      --danger:#b91c1c; --danger-bg:#fef2f2; --soft:#f5f3ff; --soft-text:#5b21b6;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.45}
-    .container{max-width:1120px;margin:0 auto;padding:24px}
-    h1,h2,h3{margin-top:0;line-height:1.2}
-    h1{font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:8px}
-    .subtitle{color:var(--muted);margin-bottom:24px}
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(15,23,42,.04)}
-    .span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-12{grid-column:span 12}
-    @media(max-width:900px){.span-4,.span-6{grid-column:span 12}.container{padding:14px}}
-    label{display:block;font-weight:650;margin-bottom:6px}
-    select,input[type=number]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-size:1rem}
-    .choice-row{display:grid;gap:8px;margin-top:8px}
-    .choice{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#fff}
-    .choice strong{font-size:.96rem}.choice span,.small{color:var(--muted);font-size:.9rem}.small{margin-top:6px}
-    .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:var(--accent-light);color:#1d4ed8;font-weight:650;font-size:.86rem;margin:4px 4px 0 0}
-    .pill.soft{background:var(--soft);color:var(--soft-text)}
-    .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
-    @media(max-width:900px){.summary{grid-template-columns:repeat(2,1fr)}}
-    .metric{background:#f9fafb;border:1px solid var(--border);border-radius:14px;padding:12px}
-    .metric .value{font-size:1.25rem;font-weight:800}.metric .label{color:var(--muted);font-size:.86rem}
-    table{width:100%;border-collapse:collapse;margin-top:12px;border-radius:12px;font-size:.95rem}
-    th,td{border-bottom:1px solid var(--border);padding:10px;text-align:left;vertical-align:top}
-    th{background:#f9fafb;font-size:.86rem;color:#374151}tr:last-child td{border-bottom:none}
-    .note{border-radius:12px;padding:12px;margin-top:10px;border:1px solid var(--border)}
-    .note.ok{background:var(--ok-bg);color:var(--ok);border-color:#bbf7d0}
-    .note.warn{background:var(--warn-bg);color:var(--warn);border-color:#fed7aa}
-    .note.danger{background:var(--danger-bg);color:var(--danger);border-color:#fecaca}
-    .button-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    button{border:0;border-radius:11px;padding:11px 14px;cursor:pointer;font-weight:750;font-size:.95rem}
-    .primary{background:var(--accent);color:#fff}.secondary{background:#eef2ff;color:#3730a3}
-    details{margin-top:12px;color:var(--muted)}details summary{cursor:pointer;color:var(--text);font-weight:700}
-    .footer{color:var(--muted);font-size:.84rem;margin-top:22px}
-    .hidden{display:none}
-    @media print{body{background:#fff}.button-row,.footer{display:none}.card{box-shadow:none;break-inside:avoid}}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Carb Rechner V2 – Fueling Planner</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Carb Rechner">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#1f2937;--muted:#6b7280;--accent:#2563eb;--accent-light:#dbeafe;--border:#e5e7eb;--warn:#b45309;--warn-bg:#fff7ed;--ok:#047857;--ok-bg:#ecfdf5;--danger:#b91c1c;--danger-bg:#fef2f2;--soft:#f5f3ff;--soft-text:#5b21b6}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.45}.container{max-width:1120px;margin:0 auto;padding:24px}h1,h2,h3{margin-top:0;line-height:1.2}h1{font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:8px}.subtitle{color:var(--muted);margin-bottom:24px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(15,23,42,.04)}.span-4{grid-column:span 4}.span-12{grid-column:span 12}@media(max-width:900px){.span-4{grid-column:span 12}.container{padding:14px}}label{display:block;font-weight:650;margin-bottom:6px}select,input[type=number]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-size:1rem}.choice-row{display:grid;gap:8px;margin-top:8px}.choice{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#fff}.choice strong{font-size:.96rem}.choice span,.small{color:var(--muted);font-size:.9rem}.small{margin-top:6px}.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:var(--accent-light);color:#1d4ed8;font-weight:650;font-size:.86rem;margin:4px 4px 0 0}.pill.soft{background:var(--soft);color:var(--soft-text)}.summary{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}@media(max-width:900px){.summary{grid-template-columns:repeat(2,1fr)}}.metric{background:#f9fafb;border:1px solid var(--border);border-radius:14px;padding:12px}.metric .value{font-size:1.18rem;font-weight:800}.metric .label{color:var(--muted);font-size:.84rem}table{width:100%;border-collapse:collapse;margin-top:12px;border-radius:12px;font-size:.95rem}th,td{border-bottom:1px solid var(--border);padding:10px;text-align:left;vertical-align:top}th{background:#f9fafb;font-size:.86rem;color:#374151}tr:last-child td{border-bottom:none}.note{border-radius:12px;padding:12px;margin-top:10px;border:1px solid var(--border)}.note.warn{background:var(--warn-bg);color:var(--warn);border-color:#fed7aa}.note.danger{background:var(--danger-bg);color:var(--danger);border-color:#fecaca}.button-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button{border:0;border-radius:11px;padding:11px 14px;cursor:pointer;font-weight:750;font-size:.95rem}.primary{background:var(--accent);color:#fff}.secondary{background:#eef2ff;color:#3730a3}details{margin-top:12px;color:var(--muted)}details summary{cursor:pointer;color:var(--text);font-weight:700}.footer{color:var(--muted);font-size:.84rem;margin-top:22px}.hidden{display:none}.suggestion-box{border:1px solid var(--border);border-radius:14px;padding:12px;background:#f9fafb;margin-top:10px}@media print{body{background:#fff}.button-row,.footer{display:none}.card{box-shadow:none;break-inside:avoid}}
+</style>
 </head>
 <body>
 <main class="container">
-  <h1>Carb Rechner V2 – Fueling Planner</h1>
-  <p class="subtitle">Plant Kohlenhydrate, Natrium, Trinkmenge, Flaschenverteilung und Nachfüllbedarf für deine Radfahrten.</p>
+<h1>Carb Rechner V2 – Fueling Planner</h1>
+<p class="subtitle">Plant Kohlenhydrate, Natrium, Trinkmenge, Flaschenvorschlag, manuelle Flaschenauswahl und Nachfüllbedarf.</p>
+<section class="grid">
+<div class="card span-4">
+<h2>1. Fahrt</h2>
+<label for="intensity">Intensität</label>
+<select id="intensity"><option value="easy">Einfach – 40 g KH/h – 2:1</option><option value="moderate" selected>Moderat – 60 g KH/h – 2:1</option><option value="hard">Hart – 80 g KH/h – 1:0,8</option><option value="race">Wettkampf – 100 g KH/h – 1:0,8</option></select>
+<div style="height:14px"></div>
+<label for="duration">Dauer in Stunden</label>
+<input id="duration" type="number" value="3" min="0.5" max="24" step="0.25" />
+<p class="small">Beispiele: 1,5 / 2 / 3,25 / 4</p>
+<div style="height:14px"></div>
+<label for="temperature">Temperatur</label>
+<select id="temperature"><option value="cold">Kühl &lt;15 °C</option><option value="normal" selected>Normal 15–25 °C</option><option value="hot">Heiß &gt;25 °C</option></select>
+</div>
 
-  <section class="grid">
-    <div class="card span-4">
-      <h2>1. Fahrt</h2>
+<div class="card span-4">
+<h2>2. Verpflegung</h2>
+<label for="fluidMode">Trinkmenge</label>
+<select id="fluidMode"><option value="auto" selected>Automatisch nach Intensität + Temperatur</option><option value="manual">Manuell überschreiben</option></select>
+<div id="manualFluidWrapper" class="hidden" style="margin-top:14px">
+<label for="manualFluid">Manuelle Trinkmenge L/h</label>
+<select id="manualFluid"><option value="0.4">0,4 L/h</option><option value="0.5">0,5 L/h</option><option value="0.65">0,65 L/h</option><option value="0.75" selected>0,75 L/h</option><option value="0.85">0,85 L/h</option><option value="1.0">1,0 L/h</option><option value="1.1">1,1 L/h</option><option value="1.25">1,25 L/h</option></select>
+</div>
+<div style="height:14px"></div>
+<label for="gels">Anzahl PowerBar Original Gels</label>
+<select id="gels"><option value="0" selected>0 Gels</option><option value="1">1 Gel</option><option value="2">2 Gels</option><option value="3">3 Gels</option><option value="4">4 Gels</option><option value="5">5 Gels</option><option value="6">6 Gels</option><option value="7">7 Gels</option><option value="8">8 Gels</option><option value="9">9 Gels</option><option value="10">10 Gels</option><option value="11">11 Gels</option><option value="12">12 Gels</option></select>
+<p class="small">Je Gel: 30 g KH im 2:1 Verhältnis und ca. 200 mg Natrium.</p>
+<div style="height:14px"></div>
+<label for="sweatRate">Schweißrate / Natriumziel</label>
+<select id="sweatRate"><option value="low">Gering – 400 mg Natrium/h</option><option value="normal" selected>Normal – 500 mg Natrium/h</option><option value="high">Hoch – 750 mg Natrium/h</option><option value="veryHigh">Sehr hoch – 1000 mg Natrium/h</option></select>
+</div>
 
-      <label for="intensity">Intensität</label>
-      <select id="intensity">
-        <option value="easy">Einfach – 40 g KH/h – 2:1</option>
-        <option value="moderate" selected>Moderat – 60 g KH/h – 2:1</option>
-        <option value="hard">Hart – 80 g KH/h – 1:0,8</option>
-        <option value="race">Wettkampf – 100 g KH/h – 1:0,8</option>
-      </select>
+<div class="card span-4">
+<h2>3. Plan</h2>
+<div id="planMetrics"></div>
+<label for="bottlePlanMode">Flaschenplanung</label>
+<select id="bottlePlanMode">
+  <option value="auto" selected>Auto-Flaschenplan aktiv</option>
+  <option value="manual">Manuell unter Punkt 4 auswählen</option>
+</select>
+<p class="small">Auto-Modus nutzt den Vorschlag automatisch. Im manuellen Modus kannst du unter Punkt 4 selbst auswählen.</p>
+<div id="suggestedBottles" class="suggestion-box"></div>
+<div id="drinkingStrategy" class="suggestion-box"></div>
 
-      <div style="height:14px"></div>
-      <label for="duration">Dauer in Stunden</label>
-      <input id="duration" type="number" value="3" min="0.5" max="24" step="0.25" />
-      <p class="small">Beispiele: 1,5 / 2 / 3,25 / 4</p>
+</div>
 
-      <div style="height:14px"></div>
-      <label for="temperature">Temperatur</label>
-      <select id="temperature">
-        <option value="cold">Kühl &lt;15 °C</option>
-        <option value="normal" selected>Normal 15–25 °C</option>
-        <option value="hot">Heiß &gt;25 °C</option>
-      </select>
+<div class="card span-12">
+<h2>4. Flaschen</h2>
+<p class="small">Nur relevant, wenn du unter Punkt 3 auf „Manuell“ stellst oder den Vorschlag bewusst ändern möchtest.</p>
+<div class="choice-row" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+<label class="choice"><div><strong>600 ml Flasche 1</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="600 ml Flasche 1" data-volume="600" data-type="bottle"></label>
+<label class="choice"><div><strong>600 ml Flasche 2</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="600 ml Flasche 2" data-volume="600" data-type="bottle"></label>
+<label class="choice"><div><strong>750 ml Flasche 1</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="750 ml Flasche 1" data-volume="750" data-type="bottle" checked></label>
+<label class="choice"><div><strong>750 ml Flasche 2</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="750 ml Flasche 2" data-volume="750" data-type="bottle"></label>
+<label class="choice"><div><strong>Softflask 150 ml 1</strong><br><span>max. 100 g KH</span></div><input type="checkbox" class="bottle" data-name="Softflask 150 ml 1" data-volume="150" data-type="soft"></label>
+<label class="choice"><div><strong>Softflask 150 ml 2</strong><br><span>max. 100 g KH</span></div><input type="checkbox" class="bottle" data-name="Softflask 150 ml 2" data-volume="150" data-type="soft"></label>
+</div>
+</div>
 
-      <div style="height:14px"></div>
-      <label for="sweatRate">Schweißrate / Natriumziel</label>
-      <select id="sweatRate">
-        <option value="low">Gering – 400 mg Natrium/h</option>
-        <option value="normal" selected>Normal – 500 mg Natrium/h</option>
-        <option value="high">Hoch – 750 mg Natrium/h</option>
-        <option value="veryHigh">Sehr hoch – 1000 mg Natrium/h</option>
-      </select>
-    </div>
-
-    <div class="card span-4">
-      <h2>2. Trinkmenge</h2>
-
-      <label for="fluidMode">Trinkmenge</label>
-      <select id="fluidMode">
-        <option value="auto" selected>Automatisch nach Intensität + Temperatur</option>
-        <option value="manual">Manuell überschreiben</option>
-      </select>
-
-      <div id="manualFluidWrapper" class="hidden" style="margin-top:14px">
-        <label for="manualFluid">Manuelle Trinkmenge L/h</label>
-        <select id="manualFluid">
-          <option value="0.4">0,4 L/h</option>
-          <option value="0.5">0,5 L/h</option>
-          <option value="0.65">0,65 L/h</option>
-          <option value="0.75" selected>0,75 L/h</option>
-          <option value="0.85">0,85 L/h</option>
-          <option value="1.0">1,0 L/h</option>
-          <option value="1.1">1,1 L/h</option>
-          <option value="1.25">1,25 L/h</option>
-        </select>
-      </div>
-
-      <p class="small">Die automatische Empfehlung basiert auf Temperatur und Intensität. Du kannst sie jederzeit manuell überschreiben.</p>
-
-      <div style="height:14px"></div>
-      <label for="gels">Anzahl PowerBar Original Gels</label>
-      <select id="gels">
-        <option value="0" selected>0 Gels</option>
-        <option value="1">1 Gel</option><option value="2">2 Gels</option><option value="3">3 Gels</option>
-        <option value="4">4 Gels</option><option value="5">5 Gels</option><option value="6">6 Gels</option>
-        <option value="7">7 Gels</option><option value="8">8 Gels</option><option value="9">9 Gels</option>
-        <option value="10">10 Gels</option><option value="11">11 Gels</option><option value="12">12 Gels</option>
-      </select>
-      <p class="small">Je Gel: 30 g KH im 2:1 Verhältnis und ca. 200 mg Natrium.</p>
-    </div>
-
-    <div class="card span-4">
-      <h2>3. Flaschen</h2>
-      <p class="small">Softflasks zuerst mit max. 100 g KH je 150 ml. Danach normale Flaschen von klein nach groß.</p>
-      <div class="choice-row">
-        <label class="choice"><div><strong>600 ml Flasche 1</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="600 ml Flasche 1" data-volume="600" data-type="bottle"></label>
-        <label class="choice"><div><strong>600 ml Flasche 2</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="600 ml Flasche 2" data-volume="600" data-type="bottle"></label>
-        <label class="choice"><div><strong>750 ml Flasche 1</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="750 ml Flasche 1" data-volume="750" data-type="bottle" checked></label>
-        <label class="choice"><div><strong>750 ml Flasche 2</strong><br><span>normale Flasche</span></div><input type="checkbox" class="bottle" data-name="750 ml Flasche 2" data-volume="750" data-type="bottle"></label>
-        <label class="choice"><div><strong>Softflask 150 ml 1</strong><br><span>max. 100 g KH</span></div><input type="checkbox" class="bottle" data-name="Softflask 150 ml 1" data-volume="150" data-type="soft"></label>
-        <label class="choice"><div><strong>Softflask 150 ml 2</strong><br><span>max. 100 g KH</span></div><input type="checkbox" class="bottle" data-name="Softflask 150 ml 2" data-volume="150" data-type="soft"></label>
-      </div>
-    </div>
-
-    <div class="card span-12">
-      <h2>Plan</h2>
-      <div id="rules"></div>
-      <div id="result"></div>
-      <div class="button-row">
-        <button class="primary" onclick="calculate()">Berechnen</button>
-        <button class="secondary" onclick="window.print()">Drucken</button>
-      </div>
-
-      <details>
-        <summary>Regeln / Annahmen</summary>
-        <p>Carb-Ziele: einfach 40 g/h, moderat 60 g/h, hart 80 g/h, Wettkampf 100 g/h. Einfach/moderat = 2:1, hart/Wettkampf = 1:0,8.</p>
-        <p>Trinkmengen-Matrix: kühl 0,4/0,5/0,6/0,7 L/h; normal 0,5/0,65/0,75/0,85 L/h; heiß 0,65/0,8/0,95/1,1 L/h für einfach/moderat/hart/Wettkampf.</p>
-        <p>Salz: Natrium × 2,54 = Kochsalz. Bis 5 g Salz/L keine Warnung, 5–6,5 g/L Hinweis, über 6,5 g/L zusätzlicher Natriumhinweis.</p>
-      </details>
-    </div>
-  </section>
-
-  <p class="footer">Hinweis: Praxisrechner, keine medizinische Beratung. Verträglichkeit im Training testen.</p>
+<div class="card span-12">
+<h2>Flaschen-Details</h2>
+<div id="rules"></div>
+<div id="result"></div>
+<div class="button-row"><button class="primary" onclick="calculate()">Berechnen</button><button class="secondary" onclick="window.print()">Drucken</button></div>
+<details><summary>Regeln / Annahmen</summary><p>Carb-Ziele: einfach 40 g/h, moderat 60 g/h, hart 80 g/h, Wettkampf 100 g/h. Einfach/moderat = 2:1, hart/Wettkampf = 1:0,8.</p><p>Trinkmengen-Matrix: kühl 0,4/0,5/0,6/0,7 L/h; normal 0,5/0,65/0,75/0,85 L/h; heiß 0,65/0,8/0,95/1,1 L/h für einfach/moderat/hart/Wettkampf.</p><p>Salz: Natrium × 2,54 = Kochsalz. Bis 5 g Salz/L keine Warnung, 5–6,5 g/L Hinweis, über 6,5 g/L zusätzlicher Natriumhinweis.</p></details>
+</div>
+</section>
+<p class="footer">Hinweis: Praxisrechner, keine medizinische Beratung. Verträglichkeit im Training testen.</p>
 </main>
 
 <script>
-const CONFIG = {
-  easy: { label:"Einfach", carbsPerHour:40, ratioName:"2:1", maltoPart:2, fructosePart:1 },
-  moderate: { label:"Moderat", carbsPerHour:60, ratioName:"2:1", maltoPart:2, fructosePart:1 },
-  hard: { label:"Hart", carbsPerHour:80, ratioName:"1:0,8", maltoPart:1, fructosePart:0.8 },
-  race: { label:"Wettkampf", carbsPerHour:100, ratioName:"1:0,8", maltoPart:1, fructosePart:0.8 }
-};
-
-const TEMPERATURE = {
-  cold: { label:"Kühl <15 °C" },
-  normal: { label:"Normal 15–25 °C" },
-  hot: { label:"Heiß >25 °C" }
-};
-
-const FLUID_MATRIX = {
-  cold: { easy:0.4, moderate:0.5, hard:0.6, race:0.7 },
-  normal: { easy:0.5, moderate:0.65, hard:0.75, race:0.85 },
-  hot: { easy:0.65, moderate:0.8, hard:0.95, race:1.1 }
-};
-
-const SWEAT = {
-  low: { label:"Gering", sodiumPerHourMg:400 },
-  normal: { label:"Normal", sodiumPerHourMg:500 },
-  high: { label:"Hoch", sodiumPerHourMg:750 },
-  veryHigh: { label:"Sehr hoch", sodiumPerHourMg:1000 }
-};
-
-const GEL = { label:"PowerBar Original", carbs:30, maltoEquivalent:20, fructose:10, sodiumMg:200 };
-const softflaskMaxCarbs = 100;
-const saltFactor = 2.54;
-const okSaltPerLiter = 5.0;
-const maxBottleSaltPerLiter = 6.5;
-const highCarbConcGL = 300;
-const criticalCarbConcGL = 450;
-
-function round(value, digits=0){ const f=Math.pow(10,digits); return Math.round(value*f)/f; }
-function formatL(value){ return String(round(value,2)).replace(".", ","); }
-
+const CONFIG={easy:{label:"Einfach",carbsPerHour:40,ratioName:"2:1",maltoPart:2,fructosePart:1},moderate:{label:"Moderat",carbsPerHour:60,ratioName:"2:1",maltoPart:2,fructosePart:1},hard:{label:"Hart",carbsPerHour:80,ratioName:"1:0,8",maltoPart:1,fructosePart:.8},race:{label:"Wettkampf",carbsPerHour:100,ratioName:"1:0,8",maltoPart:1,fructosePart:.8}};
+const TEMPERATURE={cold:{label:"Kühl <15 °C"},normal:{label:"Normal 15–25 °C"},hot:{label:"Heiß >25 °C"}};
+const FLUID_MATRIX={cold:{easy:.4,moderate:.5,hard:.6,race:.7},normal:{easy:.5,moderate:.65,hard:.75,race:.85},hot:{easy:.65,moderate:.8,hard:.95,race:1.1}};
+const SWEAT={low:{label:"Gering",sodiumPerHourMg:400},normal:{label:"Normal",sodiumPerHourMg:500},high:{label:"Hoch",sodiumPerHourMg:750},veryHigh:{label:"Sehr hoch",sodiumPerHourMg:1000}};
+const GEL={carbs:30,maltoEquivalent:20,fructose:10,sodiumMg:200};
+const softflaskMaxCarbs=100,saltFactor=2.54,okSaltPerLiter=5,maxBottleSaltPerLiter=6.5,highCarbConcGL=300,criticalCarbConcGL=450;
+function round(v,d=0){const f=Math.pow(10,d);return Math.round(v*f)/f}
+function formatL(v){return String(round(v,2)).replace(".",",")}
+function bottleInputs(){return [...document.querySelectorAll(".bottle")]}
+function allBottleDefinitions(){return bottleInputs().map((e,i)=>({id:i,name:e.dataset.name,volume:Number(e.dataset.volume),type:e.dataset.type}))}
 function selectedBottles(){
-  return [...document.querySelectorAll(".bottle:checked")].map((el,idx)=>({
-    id:idx, name:el.dataset.name, volume:Number(el.dataset.volume), type:el.dataset.type
-  }));
+  const modeEl=document.getElementById("bottlePlanMode");
+  if(modeEl && modeEl.value==="auto"){
+    const names=new Set(suggestBottleNames());
+    return allBottleDefinitions().filter(b=>names.has(b.name));
+  }
+  return bottleInputs().filter(e=>e.checked).map((e,i)=>({id:i,name:e.dataset.name,volume:Number(e.dataset.volume),type:e.dataset.type}));
 }
+function splitByRatio(t,m,f){const s=m+f;return{malto:t*m/s,fructose:t*f/s}}
+function getFluidPerHour(i,t){return document.getElementById("fluidMode").value==="manual"?Number(document.getElementById("manualFluid").value):FLUID_MATRIX[t][i]}
+function getCoreInputs(){const intensityKey=document.getElementById("intensity").value,temperatureKey=document.getElementById("temperature").value,sweatKey=document.getElementById("sweatRate").value,duration=Number(document.getElementById("duration").value),gels=Number(document.getElementById("gels").value||0),cfg=CONFIG[intensityKey],temp=TEMPERATURE[temperatureKey],sweat=SWEAT[sweatKey],fluidPerHour=getFluidPerHour(intensityKey,temperatureKey);return{intensityKey,temperatureKey,sweatKey,duration,gels,cfg,temp,sweat,fluidPerHour}}
+function suggestBottleNames(){const c=getCoreInputs(),needL=Math.max(0,c.duration*c.fluidPerHour);let names=[];if(needL<=.8)names=["750 ml Flasche 1"];else if(needL<=1.35)names=["750 ml Flasche 1","600 ml Flasche 1"];else names=["750 ml Flasche 1","750 ml Flasche 2"];const targetCarbs=c.cfg.carbsPerHour*c.duration,carbsAfterGels=Math.max(0,targetCarbs-c.gels*GEL.carbs);if(carbsAfterGels>0)names.push("Softflask 150 ml 1");if(carbsAfterGels>softflaskMaxCarbs)names.push("Softflask 150 ml 2");return names.slice(0,4)}
+function renderSuggestion(){const names=suggestBottleNames(),labels=names.map(n=>`<span class="pill">${n}</span>`).join("");document.getElementById("suggestedBottles").innerHTML=labels||`<span class="small">Kein Vorschlag möglich.</span>`}
+function planCarbDistribution(bottles,carbsToCarry,remainingMalto,remainingFructose){const softs=bottles.filter(b=>b.type==="soft").sort((a,b)=>a.volume-b.volume),normals=bottles.filter(b=>b.type==="bottle").sort((a,b)=>a.volume-b.volume),plan=[];let left=Math.max(0,carbsToCarry);function add(b,amount){if(amount<=0)return;const share=carbsToCarry>0?amount/carbsToCarry:0;plan.push({...b,carbs:amount,malto:remainingMalto*share,fructose:remainingFructose*share})}for(const sf of softs){if(left<=0)break;const amount=Math.min(left,softflaskMaxCarbs*(sf.volume/150));add(sf,amount);left-=amount}for(const b of normals){if(left<=0)break;add(b,left);left=0}return plan}
 
-function splitByRatio(total, maltoPart, fructosePart){
-  const sum = maltoPart + fructosePart;
-  return { malto: total * maltoPart / sum, fructose: total * fructosePart / sum };
+function renderDrinkingStrategy(c, carbPlan, remainingCarbs, totalFluidNeedL, totalBottleVolumeL, refillNeedL){
+  if(!document.getElementById("drinkingStrategy")) return;
+
+  const duration=c.duration||1;
+  const reminderMinutes=15;
+  const remindersPerHour=60/reminderMinutes;
+  const carbPerHour=remainingCarbs/duration;
+
+  let carbText="";
+  if(carbPlan.length===0 || remainingCarbs<=0){
+    carbText="<div>Keine zusätzlichen Carbs aus Flaschen nötig.</div>";
+  }else{
+    const lines=carbPlan.map(b=>{
+      const sipMl=b.type==="soft"?15:25;
+      const mlPerHour=(b.volume/duration);
+      const mlPerReminder=mlPerHour/remindersPerHour;
+      const sipsPerReminder=mlPerReminder/sipMl;
+      const label=b.type==="soft"?"kleine Schlucke":"Schlucke";
+      return `<div><strong>${b.name}:</strong> alle ${reminderMinutes} min ca. ${round(sipsPerReminder,1)} ${label} (${round(mlPerReminder)} ml je Erinnerung).</div>`;
+    }).join("");
+
+    carbText=`<div><strong>Carb-Aufnahme:</strong> ca. ${round(carbPerHour)} g KH/h aus Konzentrat.</div>${lines}<div class="small">Carb-Schluck immer mit Wasser nachspülen. Annahme: normale Flasche ca. 25 ml/Schluck, Softflask ca. 15 ml/kleiner Schluck.</div>`;
+  }
+
+  const waterPerReminder=(c.fluidPerHour/remindersPerHour)*1000;
+  const waterText=`<div><strong>Wasser/Flüssigkeit:</strong> Ziel ca. ${formatL(c.fluidPerHour)} L/h = ca. ${round(waterPerReminder)} ml alle ${reminderMinutes} min. Gesamtbedarf ${formatL(totalFluidNeedL)} L, Startkapazität ${formatL(totalBottleVolumeL)} L${refillNeedL>0?`, Nachfüllbedarf ${formatL(refillNeedL)} L`:""}.</div>`;
+
+  document.getElementById("drinkingStrategy").innerHTML=`<strong>Trinkstrategie mit Garmin-Erinnerung alle ${reminderMinutes} min</strong>${carbText}${waterText}`;
 }
-
-function getFluidPerHour(intensityKey, temperatureKey){
-  const mode = document.getElementById("fluidMode").value;
-  if (mode === "manual") return Number(document.getElementById("manualFluid").value);
-  return FLUID_MATRIX[temperatureKey][intensityKey];
-}
-
-function planCarbDistribution(bottles, carbsToCarry, remainingMalto, remainingFructose){
-  const softs = bottles.filter(b=>b.type==="soft").sort((a,b)=>a.volume-b.volume);
-  const normals = bottles.filter(b=>b.type==="bottle").sort((a,b)=>a.volume-b.volume);
-  const carbPlan = [];
-  let carbsLeft = Math.max(0, carbsToCarry);
-
-  function addBottle(bottle, carbsForBottle){
-    if (carbsForBottle <= 0) return;
-    const share = carbsToCarry > 0 ? carbsForBottle / carbsToCarry : 0;
-    carbPlan.push({
-      ...bottle,
-      carbs: carbsForBottle,
-      malto: remainingMalto * share,
-      fructose: remainingFructose * share
-    });
-  }
-
-  for (const sf of softs) {
-    if (carbsLeft <= 0) break;
-    const maxForThisSoftflask = softflaskMaxCarbs * (sf.volume / 150);
-    const amount = Math.min(carbsLeft, maxForThisSoftflask);
-    addBottle(sf, amount);
-    carbsLeft -= amount;
-  }
-
-  for (const bottle of normals) {
-    if (carbsLeft <= 0) break;
-    addBottle(bottle, carbsLeft);
-    carbsLeft = 0;
-  }
-
-  return carbPlan;
-}
-
-function calculate(){
-  const intensityKey = document.getElementById("intensity").value;
-  const temperatureKey = document.getElementById("temperature").value;
-  const sweatKey = document.getElementById("sweatRate").value;
-  const duration = Number(document.getElementById("duration").value);
-  const gels = Number(document.getElementById("gels").value || 0);
-
-  const cfg = CONFIG[intensityKey];
-  const temp = TEMPERATURE[temperatureKey];
-  const sweat = SWEAT[sweatKey];
-  const fluidPerHour = getFluidPerHour(intensityKey, temperatureKey);
-  const bottles = selectedBottles();
-
-  document.getElementById("manualFluidWrapper").classList.toggle("hidden", document.getElementById("fluidMode").value !== "manual");
-
-  if (!duration || duration <= 0) {
-    document.getElementById("result").innerHTML = `<div class="note danger">Bitte eine gültige Dauer eingeben.</div>`;
-    return;
-  }
-  if (bottles.length === 0) {
-    document.getElementById("result").innerHTML = `<div class="note danger">Bitte mindestens eine Flasche auswählen.</div>`;
-    return;
-  }
-
-  const targetCarbs = cfg.carbsPerHour * duration;
-  const targetSplit = splitByRatio(targetCarbs, cfg.maltoPart, cfg.fructosePart);
-
-  const gelCarbs = gels * GEL.carbs;
-  const gelMalto = gels * GEL.maltoEquivalent;
-  const gelFructose = gels * GEL.fructose;
-  const gelSodiumMg = gels * GEL.sodiumMg;
-
-  const remainingMalto = Math.max(0, targetSplit.malto - gelMalto);
-  const remainingFructose = Math.max(0, targetSplit.fructose - gelFructose);
-  const remainingCarbs = remainingMalto + remainingFructose;
-
-  const sodiumTargetMg = sweat.sodiumPerHourMg * duration;
-  const sodiumToCarryMg = Math.max(0, sodiumTargetMg - gelSodiumMg);
-  const saltTotalG = sodiumToCarryMg / 1000 * saltFactor;
-
-  const totalBottleVolumeL = bottles.reduce((s,b)=>s+b.volume,0) / 1000;
-  const totalFluidNeedL = fluidPerHour * duration;
-  const refillNeedL = Math.max(0, totalFluidNeedL - totalBottleVolumeL);
-  const refillStops = refillNeedL <= 0 ? 0 : Math.ceil(refillNeedL / 0.75);
-
-  const maxSaltInBottlesG = maxBottleSaltPerLiter * totalBottleVolumeL;
-  const saltInBottlesG = Math.min(saltTotalG, maxSaltInBottlesG);
-  const additionalSaltG = Math.max(0, saltTotalG - saltInBottlesG);
-  const additionalSodiumMg = additionalSaltG / saltFactor * 1000;
-
-  const carbPlan = planCarbDistribution(bottles, remainingCarbs, remainingMalto, remainingFructose);
-  const carbPlanByName = new Map(carbPlan.map(b => [b.name, b]));
-  const carbVolumeTotalMl = carbPlan.reduce((s,b)=>s+b.volume,0);
-  const carbsActuallyAssigned = carbPlan.reduce((s,b)=>s+b.carbs,0);
-
-  let rows = "";
-  bottles.forEach(b=>{
-    const carbEntry = carbPlanByName.get(b.name);
-    const saltG = saltInBottlesG * (b.volume / (totalBottleVolumeL * 1000));
-    let malto=0, fructose=0, carbs=0, role="Wasser + Salz";
-
-    if (carbEntry) {
-      malto = carbEntry.malto;
-      fructose = carbEntry.fructose;
-      carbs = carbEntry.carbs;
-      role = b.type === "soft" ? "Carb-Gel-Konzentrat" : "Carb-Konzentrat";
-    }
-
-    const carbConc = b.volume > 0 ? carbs / (b.volume/1000) : 0;
-    const saltConc = b.volume > 0 ? saltG / (b.volume/1000) : 0;
-
-    rows += `
-      <tr>
-        <td><strong>${b.name}</strong><br><span class="small">${role}</span></td>
-        <td>${b.volume} ml</td>
-        <td>${round(malto)} g</td>
-        <td>${round(fructose)} g</td>
-        <td>${round(carbs)} g</td>
-        <td>${round(saltG,1)} g</td>
-        <td>${round(carbConc)} g/L</td>
-        <td>${round(saltConc,1)} g/L</td>
-      </tr>`;
-  });
-
-  const carbConcTotal = carbVolumeTotalMl > 0 ? carbsActuallyAssigned / (carbVolumeTotalMl/1000) : 0;
-  const saltConcTotal = saltInBottlesG / totalBottleVolumeL;
-
-  let notes = "";
-
-  if (refillNeedL > 0) {
-    notes += `<div class="note warn">Nachfüllbedarf: Dir fehlen ca. ${formatL(refillNeedL)} L Flüssigkeit. Plane ungefähr ${refillStops} Wasserstopp(s) ein, wenn du pro Stopp etwa 750 ml nachfüllst.</div>`;
-  } else {
-    notes += `<div class="note ok">Die ausgewählten Flaschen decken die empfohlene Trinkmenge für diese Fahrt vollständig ab.</div>`;
-  }
-
-  if (gelCarbs > targetCarbs) {
-    notes += `<div class="note warn">Die gewählten Gels liefern bereits mehr Kohlenhydrate als dein Ziel. Malto/Fructose in Flaschen wird deshalb auf 0 g gesetzt.</div>`;
-  }
-
-  if (gelSodiumMg >= sodiumTargetMg && gels > 0) {
-    notes += `<div class="note ok">Die Gels decken dein Natriumziel bereits vollständig oder übersteigen es. Es wird kein zusätzliches Salz in den Flaschen eingeplant.</div>`;
-  }
-
-  const fullSoftflasks = carbPlan.filter(b => b.type === "soft" && b.carbs >= softflaskMaxCarbs * (b.volume / 150) - 0.1).length;
-  if (fullSoftflasks > 0) {
-    notes += `<div class="note ok">${fullSoftflasks} Softflask(s) werden bis zur Grenze von ${softflaskMaxCarbs} g KH pro 150 ml genutzt.</div>`;
-  }
-
-  if (carbConcTotal > criticalCarbConcGL) {
-    notes += `<div class="note danger">Das Carb-Konzentrat liegt insgesamt bei ca. ${round(carbConcTotal)} g/L. Das ist sehr zäh/kritisch. Gut mit Wasser nachspülen und im Training testen.</div>`;
-  } else if (carbConcTotal > highCarbConcGL) {
-    notes += `<div class="note warn">Das Carb-Konzentrat liegt insgesamt bei ca. ${round(carbConcTotal)} g/L. Das ist hoch konzentriert. Gut schütteln und mit Wasser nachspülen.</div>`;
-  } else if (remainingCarbs > 0) {
-    notes += `<div class="note ok">Carb-Konzentration liegt insgesamt bei ca. ${round(carbConcTotal)} g/L.</div>`;
-  }
-
-  if (additionalSodiumMg > 0) {
-    notes += `<div class="note danger">Die Salzkonzentration in den Flaschen ist auf ${maxBottleSaltPerLiter} g/L begrenzt. Zusätzlich mitnehmen: ca. ${round(additionalSodiumMg)} mg Natrium, entsprechend ca. ${round(additionalSaltG,1)} g Salz über Tabs/Kapseln.</div>`;
-  } else if (saltConcTotal > okSaltPerLiter) {
-    notes += `<div class="note warn">Deutlich salzig: ca. ${round(saltConcTotal,1)} g Salz/L. Für lange Fahrten, Hitze oder hohe Schweißverluste praxisnah, aber testen.</div>`;
-  } else {
-    notes += `<div class="note ok">Salz/Natrium ist auf alle ausgewählten Flaschen verteilt. Konzentration: ca. ${round(saltConcTotal,1)} g Salz/L.</div>`;
-  }
-
-  document.getElementById("rules").innerHTML = `
-    <span class="pill">${cfg.label}</span>
-    <span class="pill">${cfg.carbsPerHour} g KH/h</span>
-    <span class="pill">${cfg.ratioName} Malto:Fructose</span>
-    <span class="pill">${temp.label}</span>
-    <span class="pill soft">${formatL(fluidPerHour)} L/h Trinkmenge</span>
-    <span class="pill">${sweat.label}: ${sweat.sodiumPerHourMg} mg Natrium/h</span>
-    <span class="pill">${gels} Gel(s): ${round(gelSodiumMg)} mg Natrium</span>
-  `;
-
-  document.getElementById("result").innerHTML = `
-    <div class="summary">
-      <div class="metric"><div class="value">${round(targetCarbs)} g</div><div class="label">Ziel-KH gesamt</div></div>
-      <div class="metric"><div class="value">${round(remainingCarbs)} g</div><div class="label">KH in Flaschen</div></div>
-      <div class="metric"><div class="value">${formatL(totalFluidNeedL)} L</div><div class="label">Flüssigkeitsbedarf</div></div>
-      <div class="metric"><div class="value">${formatL(totalBottleVolumeL)} L</div><div class="label">Startkapazität</div></div>
-      <div class="metric"><div class="value">${formatL(refillNeedL)} L</div><div class="label">Nachfüllbedarf</div></div>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Flasche</th><th>Volumen</th><th>Malto</th><th>Fructose</th><th>KH gesamt</th><th>Salz</th><th>KH-Konz.</th><th>Salz-Konz.</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-
-    <div class="note ok">
-      Zielsplit vor Gel-Abzug: ${round(targetSplit.malto)} g Malto/Glucose-Anteil + ${round(targetSplit.fructose)} g Fructose.
-      Durch ${gels} Gel(s): ${round(gelCarbs)} g KH und ${round(gelSodiumMg)} mg Natrium.
-      Nach Gel-Abzug bleiben: ${round(remainingMalto)} g Malto + ${round(remainingFructose)} g Fructose.
-      Natriumziel gesamt: ${round(sodiumTargetMg)} mg; davon noch über Flaschen/Tabs: ${round(sodiumToCarryMg)} mg.
-      Salz in Flaschen geplant: ${round(saltInBottlesG,1)} g.
-    </div>
-    ${notes}
-  `;
-}
-
-document.querySelectorAll("input, select").forEach(el=>{
-  el.addEventListener("input", calculate);
-  el.addEventListener("change", calculate);
-});
+function calculate(){const c=getCoreInputs(),bottles=selectedBottles();document.getElementById("manualFluidWrapper").classList.toggle("hidden",document.getElementById("fluidMode").value!=="manual");renderSuggestion();if(!c.duration||c.duration<=0){document.getElementById("result").innerHTML=`<div class="note danger">Bitte eine gültige Dauer eingeben.</div>`;return}if(bottles.length===0){document.getElementById("result").innerHTML=`<div class="note danger">Bitte mindestens eine Flasche auswählen oder den .</div>`;return}
+const targetCarbs=c.cfg.carbsPerHour*c.duration,targetSplit=splitByRatio(targetCarbs,c.cfg.maltoPart,c.cfg.fructosePart),gelCarbs=c.gels*GEL.carbs,gelMalto=c.gels*GEL.maltoEquivalent,gelFructose=c.gels*GEL.fructose,gelSodiumMg=c.gels*GEL.sodiumMg,remainingMalto=Math.max(0,targetSplit.malto-gelMalto),remainingFructose=Math.max(0,targetSplit.fructose-gelFructose),remainingCarbs=remainingMalto+remainingFructose,sodiumTargetMg=c.sweat.sodiumPerHourMg*c.duration,sodiumToCarryMg=Math.max(0,sodiumTargetMg-gelSodiumMg),saltNeededG=sodiumToCarryMg/1000*saltFactor,totalBottleVolumeL=bottles.reduce((s,b)=>s+b.volume,0)/1000,totalFluidNeedL=c.fluidPerHour*c.duration,refillNeedL=Math.max(0,totalFluidNeedL-totalBottleVolumeL),refillStops=refillNeedL<=0?0:Math.ceil(refillNeedL/.75),maxSaltInBottlesG=maxBottleSaltPerLiter*totalBottleVolumeL,saltInBottlesG=Math.min(saltNeededG,maxSaltInBottlesG),uncoveredSaltG=Math.max(0,saltNeededG-saltInBottlesG),uncoveredSodiumMg=uncoveredSaltG/saltFactor*1000,carbPlan=planCarbDistribution(bottles,remainingCarbs,remainingMalto,remainingFructose),carbMap=new Map(carbPlan.map(b=>[b.name,b])),carbVolumeTotalMl=carbPlan.reduce((s,b)=>s+b.volume,0),carbsAssigned=carbPlan.reduce((s,b)=>s+b.carbs,0);
+renderDrinkingStrategy(c,carbPlan,remainingCarbs,totalFluidNeedL,totalBottleVolumeL,refillNeedL);
+let rows="";bottles.forEach(b=>{const ce=carbMap.get(b.name),saltG=saltInBottlesG*(b.volume/(totalBottleVolumeL*1000));let malto=0,fructose=0,carbs=0,role="Wasser + Salz";if(ce){malto=ce.malto;fructose=ce.fructose;carbs=ce.carbs;role=b.type==="soft"?"Carb-Gel-Konzentrat":"Carb-Konzentrat"}const carbConc=b.volume>0?carbs/(b.volume/1000):0,saltConc=b.volume>0?saltG/(b.volume/1000):0;rows+=`<tr><td><strong>${b.name}</strong><br><span class="small">${role}</span></td><td>${b.volume} ml</td><td>${round(malto)} g</td><td>${round(fructose)} g</td><td>${round(carbs)} g</td><td>${round(saltG,1)} g</td><td>${round(carbConc)} g/L</td><td>${round(saltConc,1)} g/L</td></tr>`});
+if(c.gels>0){rows+=`<tr><td><strong>PowerBar Original Gel(s)</strong><br><span class="small">werden von KH- und Natriumziel abgezogen</span></td><td>${c.gels} Stück</td><td>${round(gelMalto)} g</td><td>${round(gelFructose)} g</td><td>${round(gelCarbs)} g</td><td>–</td><td>–</td><td>${round(gelSodiumMg)} mg Natrium</td></tr>`}
+const carbConcTotal=carbVolumeTotalMl>0?carbsAssigned/(carbVolumeTotalMl/1000):0,saltConcTotal=totalBottleVolumeL>0?saltInBottlesG/totalBottleVolumeL:0;let notes="";if(refillNeedL>0)notes+=`<div class="note warn">Nachfüllbedarf: ca. ${formatL(refillNeedL)} L. Plane ungefähr ${refillStops} Wasserstopp(s) ein.</div>`;if(carbConcTotal>criticalCarbConcGL)notes+=`<div class="note danger">Carb-Konzentrat sehr zäh/kritisch: ca. ${round(carbConcTotal)} g/L.</div>`;else if(carbConcTotal>highCarbConcGL)notes+=`<div class="note warn">Carb-Konzentrat hoch konzentriert: ca. ${round(carbConcTotal)} g/L.</div>`;if(uncoveredSodiumMg>0)notes+=`<div class="note danger">Ungedecktes Natrium: ca. ${round(uncoveredSodiumMg)} mg. Über Tabs/Kapseln ergänzen.</div>`;else if(saltConcTotal>okSaltPerLiter)notes+=`<div class="note warn">Deutlich salzig: ca. ${round(saltConcTotal,1)} g Salz/L.</div>`;
+document.getElementById("rules").innerHTML=`<span class="pill">${c.cfg.label}</span><span class="pill">${c.cfg.carbsPerHour} g KH/h</span><span class="pill">${c.cfg.ratioName} Malto:Fructose</span><span class="pill">${c.temp.label}</span><span class="pill soft">${formatL(c.fluidPerHour)} L/h Trinkmenge</span><span class="pill">${c.sweat.label}: ${c.sweat.sodiumPerHourMg} mg Natrium/h</span><span class="pill">${c.gels} Gel(s): ${round(gelSodiumMg)} mg Natrium</span>`;
+document.getElementById("planMetrics").innerHTML=`<div class="summary"><div class="metric"><div class="value">${round(targetCarbs)} g</div><div class="label">Ziel-KH gesamt</div></div><div class="metric"><div class="value">${round(remainingCarbs)} g</div><div class="label">KH in Flaschen</div></div><div class="metric"><div class="value">${formatL(totalFluidNeedL)} L</div><div class="label">Flüssigkeitsbedarf</div></div><div class="metric"><div class="value">${formatL(totalBottleVolumeL)} L</div><div class="label">Startkapazität</div></div><div class="metric"><div class="value">${formatL(refillNeedL)} L</div><div class="label">Nachfüllbedarf</div></div><div class="metric"><div class="value">${round(uncoveredSodiumMg)} mg</div><div class="label">Natrium ungedeckt</div></div></div>`;
+document.getElementById("result").innerHTML=`<table><thead><tr><th>Komponente</th><th>Volumen / Anzahl</th><th>Malto</th><th>Fructose</th><th>KH gesamt</th><th>Salz</th><th>KH-Konz.</th><th>Salz-Konz.</th></tr></thead><tbody>${rows}</tbody></table>${notes}`}
+document.querySelectorAll("input, select").forEach(el=>{el.addEventListener("input",calculate);el.addEventListener("change",calculate)});
 calculate();
 </script>
 </body>
